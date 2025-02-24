@@ -12,14 +12,14 @@
                         @csrf
 
                         <div class="form-group">
-                            <label for="word">Word</label>
-                            <input type="text" class="form-control" id="word" name="word" required>
-                        </div>
+    <label for="deutsch">Deutsch</label>
+    <input type="text" class="form-control" id="deutsch" name="deutsch" required>
+</div>
 
-                        <div class="form-group">
-                            <label for="translation">Translation</label>
-                            <input type="text" class="form-control" id="translation" name="translation" required>
-                        </div>
+<div class="form-group">
+    <label for="englisch">Englisch</label>
+    <input type="text" class="form-control" id="englisch" name="englisch" required>
+</div>
 
                         <button type="submit" class="btn btn-primary">Create</button>
                     </form>

@@ -15,6 +15,8 @@
                     @endif
 
                     You are logged in!
+                    <br><br>
+                    <a href="{{ route('words.index') }}" class="btn btn-primary">Continue to Study</a>
                 </div>
             </div>
         </div>

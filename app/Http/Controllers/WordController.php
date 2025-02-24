@@ -103,4 +103,62 @@ class WordController extends Controller
         return redirect()->route('words.index')
                         ->with('success','Word deleted successfully');
     }
+    /**
+     * Handle the training answer submission.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function checkAnswer(Request $request)
+    {
+        $request->validate([
+            'answer' => 'required',
+            'word_id' => 'required|exists:words,id',
+        ]);
+
+        $word = Word::find($request->word_id);
+        if (!$word) {
+            return response()->json([
+                'correct' => false,
+                'newScore' => null,
+                'correctAnswer' => null,
+            ], 404);
+        }
+
+        $correct = strtolower($request->answer) === strtolower($word->englisch);
+
+        if ($correct) {
+            Auth::user()->increment('score');
+            $newScore = Auth::user()->score;
+        }
+
+        return response()->json([
+            'correct' => $correct,
+            'newScore' => $correct ? Auth::user()->score : null,
+            'correctAnswer' => $correct ? null : $word->englisch,
+        ]);
+    }
+
+    /**
+     * Load the next word for training.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function nextWord()
+    {
+        $word = Auth::user()->words()->inRandomOrder()->first();
+
+        return response()->json([
+            'word' => $word,
+        ]);
+    }
+    /**
+     * Display the training view.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function training()
+    {
+        return view('training.index');
+    }
 }

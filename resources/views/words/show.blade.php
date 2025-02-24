@@ -8,8 +8,8 @@
                 <div class="card-header">Word Details</div>
 
                 <div class="card-body">
-                    <p><strong>Word:</strong> {{ $word->word }}</p>
-                    <p><strong>Translation:</strong> {{ $word->translation }}</p>
+                    <p><strong>Word:</strong> {{ $word->deutsch }}</p>
+                    <p><strong>Translation:</strong> {{ $word->englisch }}</p>
                     <a href="{{ route('words.index') }}" class="btn btn-primary">Back to My Words</a>
                 </div>
             </div>
