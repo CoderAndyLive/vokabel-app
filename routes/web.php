@@ -25,3 +25,4 @@ Route::middleware(['auth', 'admin'])->group(function () {
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/', [App\Http\Controllers\LandingPageController::class, 'index'])->name('landing');

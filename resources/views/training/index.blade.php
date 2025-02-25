@@ -2,51 +2,52 @@
 
 @section('content')
 <div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">Training</div>
-
-                <div class="card-body">
-                    <div id="training-app">
-                        <p id="word">Loading...</p>
-                        <form id="answer-form">
-                            @csrf
-                            <input type="hidden" id="word-id" name="word_id">
-                            <div class="form-group">
-                                <label for="answer">Your Answer:</label>
-                                <input type="text" class="form-control" id="answer" name="answer" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Submit</button>
-                        </form>
-                        <p id="message"></p>
-                        <p id="score">Score: 0</p>
-                    </div>
-                </div>
+    <h1>Training</h1>
+    @if(session('error'))
+        <div class="alert alert-danger">{{ session('error') }}</div>
+    @endif
+    @if($word)
+        <form id="answer-form" action="{{ route('words.checkAnswer') }}" method="POST">
+            @csrf
+            <div class="form-group">
+                <label for="deutsch">{{ $word->deutsch }}</label>
+                <input type="hidden" name="word_id" value="{{ $word->id }}">
+                <input type="text" name="answer" class="form-control" required>
             </div>
-        </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    @else
+        <p>No words available for training.</p>
+    @endif
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="resultModal" tabindex="-1" role="dialog" aria-labelledby="resultModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="resultModalLabel">Result</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="resultMessage">
+        <!-- Result message will be populated here -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
     </div>
+  </div>
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    loadNextWord();
-
     document.getElementById('answer-form').addEventListener('submit', function(event) {
         event.preventDefault();
         checkAnswer();
     });
 });
-
-function loadNextWord() {
-    fetch('{{ route('words.nextWord') }}')
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('word').textContent = data.word.deutsch;
-            document.getElementById('word-id').value = data.word.id;
-        })
-        .catch(error => console.error('Error loading next word:', error));
-}
 
 function checkAnswer() {
     const form = document.getElementById('answer-form');
@@ -59,14 +60,39 @@ function checkAnswer() {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
         }
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
     .then(data => {
+        const resultMessage = document.getElementById('resultMessage');
+        if (data.correct) {
+            resultMessage.innerHTML = `<div class="alert alert-success">Correct! Your new score is ${data.newScore}.</div>`;
+        } else {
+            resultMessage.innerHTML = `<div class="alert alert-danger">Incorrect! The correct answer was ${data.correctAnswer}.</div>`;
+        }
+        $('#resultModal').modal('show');
         form.reset();
-        document.getElementById('message').textContent = data.correct ? 'Correct!' : 'Incorrect!';
-        document.getElementById('score').textContent = 'Score: ' + data.newScore;
         loadNextWord();
     })
     .catch(error => console.error('Error checking answer:', error));
+}
+
+function loadNextWord() {
+    fetch('{{ route('words.nextWord') }}')
+        .then(response => response.json())
+        .then(data => {
+            if (data.word) {
+                document.querySelector('label[for="deutsch"]').textContent = data.word.deutsch;
+                document.querySelector('input[name="word_id"]').value = data.word.id;
+            } else {
+                document.getElementById('resultMessage').innerHTML = '<p>No words available for training.</p>';
+                $('#resultModal').modal('show');
+            }
+        })
+        .catch(error => console.error('Error loading next word:', error));
 }
 </script>
 @endsection

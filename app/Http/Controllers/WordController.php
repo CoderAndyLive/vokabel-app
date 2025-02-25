@@ -115,30 +115,29 @@ class WordController extends Controller
             'answer' => 'required',
             'word_id' => 'required|exists:words,id',
         ]);
-
+        
         $word = Word::find($request->word_id);
         if (!$word) {
             return response()->json([
-                'correct' => false,
-                'newScore' => null,
-                'correctAnswer' => null,
+            'correct' => false,
+            'newScore' => null,
+            'correctAnswer' => null,
             ], 404);
         }
-
+        
         $correct = strtolower($request->answer) === strtolower($word->englisch);
-
+        
         if ($correct) {
-            Auth::user()->increment('score');
-            $newScore = Auth::user()->score;
+            Auth::user()->increment('highscore');
+            $newScore = Auth::user()->highscore;
         }
-
+        
         return response()->json([
             'correct' => $correct,
-            'newScore' => $correct ? Auth::user()->score : null,
+            'newScore' => $correct ? Auth::user()->highscore : null,
             'correctAnswer' => $correct ? null : $word->englisch,
         ]);
     }
-
     /**
      * Load the next word for training.
      *
@@ -158,7 +157,8 @@ class WordController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function training()
-    {
-        return view('training.index');
-    }
+{
+    $word = Auth::user()->words()->inRandomOrder()->first();
+    return view('training.index', compact('word'));
+}
 }
