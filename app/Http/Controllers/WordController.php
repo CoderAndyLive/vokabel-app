@@ -77,17 +77,14 @@ class WordController extends Controller
      * @param  \App\Models\Word  $word
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Word $word)
+    public function update(Request $request, $id)
     {
-        $request->validate([
-            'deutsch' => 'required',
-            'englisch' => 'required',
-        ]);
+        $word = Word::findOrFail($id);
+        $word->deutsch = $request->input('deutsch');
+        $word->englisch = $request->input('englisch');
+        $word->save();
 
-        $word->update($request->all());
-
-        return redirect()->route('words.index')
-                        ->with('success','Word updated successfully');
+        return response()->json(['success' => true]);
     }
 
     /**
