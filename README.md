@@ -37,8 +37,8 @@ This is a Laravel-based web application for managing vocabulary learning. It inc
     cp .env.example .env
     ```
 
-4. Generate an application :
-key    ```sh
+4. Generate an application key :
+    ```sh
     php artisan key:generate
     ```
 
