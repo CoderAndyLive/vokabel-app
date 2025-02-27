@@ -14,8 +14,11 @@ class WordTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->user = User::factory()->create();
-        $this->actingAs($this->user);
+        // Only create and authenticate a user for tests that require it
+        if (!in_array($this->getName(), ['test_user_can_register', 'test_user_can_login'])) {
+            $this->user = User::factory()->create();
+            $this->actingAs($this->user);
+        }
     }
 
     /**
@@ -88,5 +91,46 @@ class WordTest extends TestCase
         $this->assertDatabaseMissing('words', [
             'id' => $word->id,
         ]);
+    }
+
+    /**
+     * Test if a user can register.
+     *
+     * @return void
+     */
+    public function test_user_can_register()
+    {
+        $response = $this->post('/register', [
+            'name' => 'Test User',
+            'email' => 'testuser@example.com',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+        ]);
+
+        $response->assertStatus(302);
+        $this->assertDatabaseHas('users', [
+            'email' => 'testuser@example.com',
+        ]);
+    }
+
+    /**
+     * Test if a user can login.
+     *
+     * @return void
+     */
+    public function test_user_can_login()
+    {
+        $user = User::factory()->create([
+            'email' => 'testuser@example.com',
+            'password' => bcrypt('password'),
+        ]);
+
+        $response = $this->post('/login', [
+            'email' => 'testuser@example.com',
+            'password' => 'password',
+        ]);
+
+        $response->assertStatus(302);
+        $this->assertAuthenticatedAs($user);
     }
 }
