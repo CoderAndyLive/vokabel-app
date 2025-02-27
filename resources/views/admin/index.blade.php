@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('content')
 <div class="container">
@@ -15,6 +15,8 @@
                     @endif
 
                     You are logged in as Admin!
+                    <br><br>
+                    <a href="{{ route('admin.users.index') }}" class="btn btn-primary">Go to Dashboard</a>
                 </div>
             </div>
         </div>
