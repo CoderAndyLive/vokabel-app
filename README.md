@@ -9,7 +9,7 @@
 
 ## About This Project
 
-This is a Laravel-based web application for managing vocabulary learning. It includes features for user authentication, word management, and training sessions.
+This is a Laravel-based web application for managing vocabulary learning. It includes features for user authentication, word management, training sessions, and an admin panel for managing users.
 
 ## Features
 
@@ -23,7 +23,7 @@ This is a Laravel-based web application for managing vocabulary learning. It inc
 1. Clone the repository:
     ```sh
     git clone https://github.com/CoderAndyLive/vokabel-app
-    cd /vokabel-app
+    cd vokabel-app
     ```
 
 2. Install dependencies:
@@ -32,7 +32,7 @@ This is a Laravel-based web application for managing vocabulary learning. It inc
     npm install
     ```
 
-3. Copy the [.env.example](http://_vscodecontentref_/1) file to [.env](http://_vscodecontentref_/2) and configure your environment variables:
+3. Copy the `.env.example` file to [.env](http://_vscodecontentref_/1) and configure your environment variables:
     ```sh
     cp .env.example .env
     ```
@@ -58,11 +58,11 @@ key    ```sh
 - Visit `http://localhost:8000` to access the application.
 - Register a new user or log in with an existing account.
 - Manage words and start training sessions from the dashboard.
+- Admin users can manage other users from the admin panel.
 
-## Contributing
+## Running Tests
 
-Thank you for considering contributing to this project! Please follow the [contribution guide](https://laravel.com/docs/contributions).
+To run the tests, use the following command:
 
-## License
-
-This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```sh
+php artisan test
