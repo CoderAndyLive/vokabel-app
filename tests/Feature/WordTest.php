@@ -60,15 +60,15 @@ class WordTest extends TestCase
     public function test_word_can_be_updated()
     {
         $word = Word::factory()->create();
-    
+
         $response = $this->put("/words/{$word->id}", [
             'deutsch' => 'Baum',
             'englisch' => 'Tree',
         ]);
-    
-        $response->assertStatus(200); 
-        $response->assertJson(['success' => true]); 
-    
+
+        $response->assertStatus(200);
+        $response->assertJson(['success' => true]);
+
         $this->assertDatabaseHas('words', [
             'id' => $word->id,
             'deutsch' => 'Baum',
@@ -133,4 +133,51 @@ class WordTest extends TestCase
         $response->assertStatus(302);
         $this->assertAuthenticatedAs($user);
     }
+/**
+ * Test if a word can be viewed.
+ *
+ * @return void
+ */
+public function test_word_can_be_viewed()
+{
+    $word = Word::factory()->create([
+        'deutsch' => 'Haus',
+        'englisch' => 'House',
+    ]);
+
+    $response = $this->get("/words/{$word->id}");
+
+    $response->assertStatus(200);
+    $response->assertSee('Haus');
+    $response->assertSee('House');
+}
+/**
+ * Test if a word cannot be created without required fields.
+ *
+ * @return void
+ */
+public function test_word_cannot_be_created_without_required_fields()
+{
+    $response = $this->post('/words', [], ['Accept' => 'application/json']);
+
+    $response->assertStatus(422);
+    $response->assertJsonValidationErrors(['deutsch', 'englisch']);
+}
+/**
+ * Test if a word cannot be updated with invalid data.
+ *
+ * @return void
+ */
+public function test_word_cannot_be_updated_with_invalid_data()
+{
+    $word = Word::factory()->create();
+
+    $response = $this->put("/words/{$word->id}", [
+        'deutsch' => 12345, // Invalid data type
+        'englisch' => 67890, // Invalid data type
+    ], ['Accept' => 'application/json']);
+
+    $response->assertStatus(422);
+    $response->assertJsonValidationErrors(['deutsch', 'englisch']);
+}
 }

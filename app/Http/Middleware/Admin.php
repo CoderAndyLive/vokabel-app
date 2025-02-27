@@ -1,9 +1,7 @@
 <?php
-
 namespace App\Http\Middleware;
 
 use Closure;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class Admin
@@ -15,12 +13,12 @@ class Admin
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle(Request $request, Closure $next)
+    public function handle($request, Closure $next)
     {
-        if (Auth::check() && Auth::user()->isAdmin()) {
+        if (Auth::check() && Auth::user()->is_admin) {
             return $next($request);
         }
 
-        return redirect('/home')->with('error', 'Unauthorized access.'); // Or wherever you want to redirect
+        return redirect('/home')->with('error', 'Unauthorized access.');
     }
 }

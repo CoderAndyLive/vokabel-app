@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -8,9 +7,9 @@ use App\Models\User;
 class AdminController extends Controller
 {
     // Show the admin dashboard
-    public function dashboard()
+    public function index()
     {
-        return view('admin.dashboard');
+        return view('admin.index');
     }
 
     // List all users
@@ -20,21 +19,14 @@ class AdminController extends Controller
         return view('admin.users.index', compact('users'));
     }
 
-    // Show a specific user
-    public function showUser($id)
-    {
-        $user = User::findOrFail($id);
-        return view('admin.users.show', compact('user'));
-    }
-
-    // Create a new user
-    public function createUser()
+    // Show the form for creating a new user
+    public function create()
     {
         return view('admin.users.create');
     }
 
-    // Store a new user
-    public function storeUser(Request $request)
+    // Store a newly created user in storage
+    public function store(Request $request)
     {
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
@@ -42,7 +34,7 @@ class AdminController extends Controller
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-        $user = User::create([
+        User::create([
             'name' => $validatedData['name'],
             'email' => $validatedData['email'],
             'password' => bcrypt($validatedData['password']),
@@ -51,15 +43,15 @@ class AdminController extends Controller
         return redirect()->route('admin.users.index')->with('success', 'User created successfully.');
     }
 
-    // Edit a user
-    public function editUser($id)
+    // Show the form for editing the specified user
+    public function edit($id)
     {
         $user = User::findOrFail($id);
         return view('admin.users.edit', compact('user'));
     }
 
-    // Update a user
-    public function updateUser(Request $request, $id)
+    // Update the specified user in storage
+    public function update(Request $request, $id)
     {
         $user = User::findOrFail($id);
 
@@ -78,8 +70,8 @@ class AdminController extends Controller
         return redirect()->route('admin.users.index')->with('success', 'User updated successfully.');
     }
 
-    // Delete a user
-    public function deleteUser($id)
+    // Remove the specified user from storage
+    public function destroy($id)
     {
         $user = User::findOrFail($id);
         $user->delete();

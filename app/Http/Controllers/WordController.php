@@ -79,6 +79,11 @@ class WordController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $request->validate([
+            'deutsch' => 'required|string|max:255',
+            'englisch' => 'required|string|max:255',
+        ]);
+
         $word = Word::findOrFail($id);
         $word->deutsch = $request->input('deutsch');
         $word->englisch = $request->input('englisch');
@@ -100,6 +105,7 @@ class WordController extends Controller
         return redirect()->route('words.index')
                         ->with('success','Word deleted successfully');
     }
+
     /**
      * Handle the training answer submission.
      *
@@ -112,29 +118,31 @@ class WordController extends Controller
             'answer' => 'required',
             'word_id' => 'required|exists:words,id',
         ]);
-        
+
         $word = Word::find($request->word_id);
+
         if (!$word) {
             return response()->json([
-            'correct' => false,
-            'newScore' => null,
-            'correctAnswer' => null,
+                'correct' => false,
+                'newScore' => null,
+                'correctAnswer' => null,
             ], 404);
         }
-        
+
         $correct = strtolower($request->answer) === strtolower($word->englisch);
-        
+
         if ($correct) {
             Auth::user()->increment('highscore');
             $newScore = Auth::user()->highscore;
         }
-        
+
         return response()->json([
             'correct' => $correct,
             'newScore' => $correct ? Auth::user()->highscore : null,
             'correctAnswer' => $correct ? null : $word->englisch,
         ]);
     }
+
     /**
      * Load the next word for training.
      *
@@ -148,14 +156,15 @@ class WordController extends Controller
             'word' => $word,
         ]);
     }
+
     /**
      * Display the training view.
      *
      * @return \Illuminate\Http\Response
      */
     public function training()
-{
-    $word = Auth::user()->words()->inRandomOrder()->first();
-    return view('training.index', compact('word'));
-}
+    {
+        $word = Auth::user()->words()->inRandomOrder()->first();
+        return view('training.index', compact('word'));
+    }
 }
